@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Monitoring ZI Aceh</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <div><i class="fas fa-building-columns"></i> MONITORING ZI ACEH </div>
+        <div><img src="LOGO BPS.png" alt="Logo BPS" width="50" title="BPS"></div>
+    </header>
+
+    <div class="container">
+        <div class="top-bar">
+            <div></div>
+            <button class="btn" onclick="openModal()">
+                <i class="fas fa-plus-circle"></i> Tambah Data
+            </button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Rencana Kerja</th>
+                    <th>Rencana Aksi</th>
+                    <th>Output</th>
+                    <th>PJK</th>
+                    <th>Target Bulan</th>
+                    <th>Link Bukti</th>
+                    <th>Progress</th>
+                </tr>
+            </thead>
+            <tbody id="dashboardTable">
+                <!-- Data dari Google Sheets -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <!-- Modal -->
+    <div class="modal" id="formModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Input Data Monitoring</h3>
+            <form id="inputForm">
+                <label>Rencana Kerja:</label>
+                <input type="text" name="rencanaKerja" required>
+
+                <label>Rencana Aksi:</label>
+                <input type="text" name="rencanaAksi" required>
+
+                <label>Output:</label>
+                <input type="text" name="output">
+
+                <label>PJK:</label>
+                <input type="text" name="pjk">
+
+                <label>Target Bulan:</label>
+                <input type="text" name="target_bulan">
+
+                <label>Link Bukti:</label>
+                <input type="url" name="bukti_link">
+
+                <label>Progress:</label>
+                <input type="number" name="progress" min="0" max="100" value="0">
+
+                <button type="submit" class="btn" style="width: 40%; margin-top: 10px;">
+                    <i class="fas fa-paper-plane"></i> Kirim
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        function openModal() {
+            document.getElementById("formModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("formModal").style.display = "none";
+        }
+
+        function loadData() {
+            fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec")
+                .then(res => res.json())
+                .then(data => {
+                    const table = document.getElementById("dashboardTable");
+                    table.innerHTML = "";
+                    data.forEach(row => {
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+              <td>${row.rencanakerja}</td>
+              <td>${row.rencanaaksi}</td>
+              <td>${row.output}</td>
+              <td>${row.pjk}</td>
+              <td>${row.targetbulan}</td>
+              <td>${row.linkBukti}</td>
+              <td>${row.progress}%</td>
+            `;
+                        table.appendChild(tr);
+                    });
+                });
+        }
+
+        document.getElementById("inputForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = {
+                rencanakerja: formData.get("rencanakerja"),
+                rencanaaksi: formData.get("rencanaaksi"),
+                output: formData.get("output"),
+                pjk: formData.get("pjk"),
+                target_bulan: formData.get("target_bulan"),
+                bukti_link: formData.get("bukti_link"),
+                progress: formData.get("progress")
+            };
+
+            fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(res => res.json())
+                .then(response => {
+                    alert("Data berhasil dikirim!");
+                    closeModal();
+                    loadData();
+                })
+                .catch(err => {
+                    alert("Gagal mengirim data.");
+                    console.error(err);
+                });
+        });
+
+        window.onload = loadData;
+    </script>
+
+</body>
+
+</html>
