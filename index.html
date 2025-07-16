@@ -3,146 +3,160 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Monitoring ZI Aceh</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-
     <header>
-        <div><i class="fas fa-building-columns"></i> MONITORING ZI ACEH </div>
-        <div><img src="LOGO BPS.png" alt="Logo BPS" width="50" title="BPS"></div>
+        <div class="header-content">
+            <div class="header-left">
+                <i class="fas fa-chart-line"></i>
+                <div>
+                    <div class="header-title">MONITORING ZI ACEH</div>
+                    <div class="header-subtitle">Sistem Monitoring Zona Integritas</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="logo-container">
+                    <img src="LOGO BPS.png" alt="" style="width: 55px;">
+                </div>
+            </div>
+        </div>
     </header>
 
     <div class="container">
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">Total Kegiatan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number" id="ongoingTasks">0</div>
+                <div class="stat-label">Sedang Berjalan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number" id="completedTasks">0</div>
+                <div class="stat-label">Selesai</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-number" id="avgProgress">0%</div>
+                <div class="stat-label">Rata-rata Progress</div>
+            </div>
+        </div>
+
         <div class="top-bar">
-            <div></div>
+            <div class="page-title">Data Monitoring</div>
             <button class="btn" onclick="openModal()">
                 <i class="fas fa-plus-circle"></i> Tambah Data
             </button>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Rencana Kerja</th>
-                    <th>Rencana Aksi</th>
-                    <th>Output</th>
-                    <th>PJK</th>
-                    <th>Target Bulan</th>
-                    <th>Link Bukti</th>
-                    <th>Progress</th>
-                </tr>
-            </thead>
-            <tbody id="dashboardTable">
-                <!-- Data dari Google Sheets -->
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Modal -->
-    <!-- Modal -->
-    <div class="modal" id="formModal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h3>Input Data Monitoring</h3>
-            <form id="inputForm">
-                <label>Rencana Kerja:</label>
-                <input type="text" name="rencanaKerja" required>
-
-                <label>Rencana Aksi:</label>
-                <input type="text" name="rencanaAksi" required>
-
-                <label>Output:</label>
-                <input type="text" name="output">
-
-                <label>PJK:</label>
-                <input type="text" name="pjk">
-
-                <label>Target Bulan:</label>
-                <input type="text" name="target_bulan">
-
-                <label>Link Bukti:</label>
-                <input type="url" name="bukti_link">
-
-                <label>Progress:</label>
-                <input type="number" name="progress" min="0" max="100" value="0">
-
-                <button type="submit" class="btn" style="width: 40%; margin-top: 10px;">
-                    <i class="fas fa-paper-plane"></i> Kirim
-                </button>
-            </form>
+        <div class="table-container">
+            <div class="table-header">
+                <i class="fas fa-table"></i>
+                Data Kegiatan Zona Integritas
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Rencana Kerja</th>
+                            <th>Rencana Aksi</th>
+                            <th>Output</th>
+                            <th>PJK</th>
+                            <th>Target Bulan</th>
+                            <th>Link Bukti</th>
+                            <th>Progress</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboardTable">
+                        <tr>
+                            <td colspan="9" class="loading">
+                                <div class="spinner"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
+    <!-- Modal Pop-up -->
+    <div class="modal" id="formModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Input Data Monitoring</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
 
-    <script>
-        function openModal() {
-            document.getElementById("formModal").style.display = "block";
-        }
+            <div class="modal-body">
+                <form id="inputForm">
+                    <div class="form-group">
+                        <label><i class="fas fa-clipboard-list input-icon"></i> Rencana Kerja</label>
+                        <input type="text" name="rencanaKerja" placeholder="Masukkan rencana kerja..." required>
+                    </div>
 
-        function closeModal() {
-            document.getElementById("formModal").style.display = "none";
-        }
+                    <div class="form-group">
+                        <label><i class="fas fa-tasks input-icon"></i> Rencana Aksi</label>
+                        <textarea name="rencanaAksi" placeholder="Masukkan rencana aksi..." required
+                            rows="3"></textarea>
+                    </div>
 
-        function loadData() {
-            fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec")
-                .then(res => res.json())
-                .then(data => {
-                    const table = document.getElementById("dashboardTable");
-                    table.innerHTML = "";
-                    data.forEach(row => {
-                        const tr = document.createElement("tr");
-                        tr.innerHTML = `
-              <td>${row.rencanakerja}</td>
-              <td>${row.rencanaaksi}</td>
-              <td>${row.output}</td>
-              <td>${row.pjk}</td>
-              <td>${row.targetbulan}</td>
-              <td>${row.linkBukti}</td>
-              <td>${row.progress}%</td>
-            `;
-                        table.appendChild(tr);
-                    });
-                });
-        }
+                    <div class="form-group">
+                        <label><i class="fas fa-bullseye input-icon"></i> Output</label>
+                        <input type="text" name="output" placeholder="Masukkan output yang diharapkan..." required>
+                    </div>
 
-        document.getElementById("inputForm").addEventListener("submit", function (e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const data = {
-                rencanakerja: formData.get("rencanakerja"),
-                rencanaaksi: formData.get("rencanaaksi"),
-                output: formData.get("output"),
-                pjk: formData.get("pjk"),
-                target_bulan: formData.get("target_bulan"),
-                bukti_link: formData.get("bukti_link"),
-                progress: formData.get("progress")
-            };
+                    <div class="form-group">
+                        <label><i class="fas fa-user-tie input-icon"></i> PJK (Penanggung Jawab Kegiatan)</label>
+                        <input type="text" name="pjk" placeholder="Masukkan nama PJK..." required>
+                    </div>
 
-            fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
-                method: "POST",
-                body: JSON.stringify(data),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-                .then(res => res.json())
-                .then(response => {
-                    alert("Data berhasil dikirim!");
-                    closeModal();
-                    loadData();
-                })
-                .catch(err => {
-                    alert("Gagal mengirim data.");
-                    console.error(err);
-                });
-        });
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-alt input-icon"></i> Target Bulan</label>
+                        <input type="month" name="target_bulan" required>
+                    </div>
 
-        window.onload = loadData;
-    </script>
+                    <div class="form-group">
+                        <label><i class="fas fa-link input-icon"></i> Link Bukti</label>
+                        <input type="url" name="bukti_link" placeholder="https://example.com/bukti">
+                    </div>
 
+                    <div class="form-group">
+                        <label><i class="fas fa-chart-line input-icon"></i> Progress (%)</label>
+                        <input type="number" name="progress" min="0" max="100" value="0" placeholder="0-100" required>
+                    </div>
+                </form>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button type="submit" form="inputForm" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Simpan Data
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
-
+    <script src="script.js"></script>
 </html>
