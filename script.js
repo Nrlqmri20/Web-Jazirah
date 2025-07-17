@@ -67,26 +67,6 @@ function getProgressBarHTML(progress) {
 }
 
 /**
- * Menghasilkan kode HTML untuk status badge berdasarkan nilai progress.
- * Status badge akan berwarna dan berlabel berbeda-beda berdasarkan nilai progress:
- * - 0: Pending (merah)
- * - 1-99: Progress (kuning)
- * - 100: Selesai (hijau)
- * @param {string} progress - Nilai progress yang diharapkan.
- * @returns {string} Kode HTML untuk status badge.
- */
-function getStatusBadge(progress) {
-    const percentage = parseInt(progress) || 0;
-    if (percentage === 0) {
-        return '<span class="status-badge status-pending">Pending</span>';
-    } else if (percentage < 100) {
-        return '<span class="status-badge status-progress">Progress</span>';
-    } else {
-        return '<span class="status-badge status-completed">Selesai</span>';
-    }
-}
-
-/**
  * Menghasilkan tanggal dalam format bahasa Indonesia berdasarkan nilai bulan dalam format "YYYY-MM".
  * Jika nilai bulan tidak ada, maka akan mengembalikan nilai "-".
  * @param {string} monthValue - Nilai bulan dalam format "YYYY-MM".
@@ -155,13 +135,27 @@ function loadData() {
                         <td>${formatMonth(row.targetbulan)}</td>
                         <td>${row.linkBukti ? `<a href="${row.linkBukti}" target="_blank" class="link-btn"><i class="fas fa-external-link-alt"></i> Lihat</a>` : '-'}</td>
                         <td>${getProgressBarHTML(row.progress)}</td>
-                        <td>${getStatusBadge(row.progress)}</td>
+                        <td>
+                            <button class="btn-aksi" onclick="editData(${index})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-aksi" onclick="deleteData(${index})"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+
                     `;
             table.appendChild(tr);
         });
 
         updateStats();
     }, 500);
+}
+function editData(index) {
+    alert("Edit data di baris ke-" + (index + 1));
+}
+
+function deleteData(index) {
+    if (confirm("Yakin ingin menghapus data ini?")) {
+        dashboardData.splice(index, 1);
+        loadData();
+    }
 }
 
 /**
@@ -204,3 +198,4 @@ document.getElementById("inputForm").addEventListener("submit", function (e) {
  * Fungsi ini akan memuat data dashboard secara awal.
  */
 loadData();
+
