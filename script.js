@@ -20,11 +20,12 @@ function openModal() {
  * Mengatur tampilan modal "formModal" menjadi tidak terlihat,
  * mengembalikan overflow halaman menjadi normal, dan mereset form input.
  */
-
 function closeModal() {
     document.getElementById("formModal").style.display = "none";
     document.body.style.overflow = "auto";
     document.getElementById("inputForm").reset();
+    // Hapus editIndex saat modal ditutup
+    delete document.getElementById("inputForm").dataset.editIndex;
 }
 
 /**
@@ -147,10 +148,35 @@ function loadData() {
         updateStats();
     }, 500);
 }
+
+/**
+ * Fungsi untuk mengedit data berdasarkan index
+ * @param {number} index - Index data yang akan diedit
+ */
 function editData(index) {
-    alert("Edit data di baris ke-" + (index + 1));
+    const data = dashboardData[index];
+    const form = document.getElementById("inputForm");
+    
+    // Isi form dengan data yang akan diedit
+    form.elements.rencanaKerja.value = data.rencanakerja;
+    form.elements.rencanaAksi.value = data.rencanaaksi;
+    form.elements.output.value = data.output;
+    form.elements.pjk.value = data.pjk;
+    form.elements.target_bulan.value = data.targetbulan;
+    form.elements.bukti_link.value = data.linkBukti || '';
+    form.elements.progress.value = data.progress;
+    
+    // Set index yang sedang diedit
+    form.dataset.editIndex = index;
+    
+    // Buka modal
+    openModal();
 }
 
+/**
+ * Fungsi untuk menghapus data berdasarkan index
+ * @param {number} index - Index data yang akan dihapus
+ */
 function deleteData(index) {
     if (confirm("Yakin ingin menghapus data ini?")) {
         dashboardData.splice(index, 1);
@@ -184,8 +210,19 @@ document.getElementById("inputForm").addEventListener("submit", function (e) {
     };
 
     setTimeout(() => {
-        dashboardData.push(data);
-        alert("Data berhasil disimpan!");
+        const editIndex = this.dataset.editIndex;
+
+        if (editIndex !== undefined) {
+            // Update data yang sudah ada
+            dashboardData[editIndex] = data;
+            delete this.dataset.editIndex; // Menghapus properti editIndex
+            alert("Data berhasil diupdate!");
+        } else {
+            // Tambahkan data baru
+            dashboardData.push(data);
+            alert("Data berhasil disimpan!");
+        }
+        
         closeModal();
         loadData();
         submitBtn.innerHTML = originalText;
@@ -198,4 +235,3 @@ document.getElementById("inputForm").addEventListener("submit", function (e) {
  * Fungsi ini akan memuat data dashboard secara awal.
  */
 loadData();
-
