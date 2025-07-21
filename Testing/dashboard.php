@@ -1,3 +1,10 @@
+<?php
+require_once 'auth.php';
+require_login(); // Memastikan user sudah login
+
+$current_user = get_current_user();
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -6,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Monitoring ZI Aceh</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 
 <body>
@@ -20,6 +27,22 @@
                 </div>
             </div>
             <div class="header-right">
+                <div class="user-info">
+                    <div class="user-details">
+                        <span class="user-name">
+                            <i class="fas fa-user-circle"></i>
+                            <?php echo htmlspecialchars($current_user['nama_lengkap']); ?>
+                        </span>
+                        <span class="user-role">
+                            <?php echo $current_user['role'] === 'admin' ? 'Administrator' : 'Pengguna'; ?>
+                        </span>
+                    </div>
+                    <div class="user-actions">
+                        <a href="?logout=1" class="logout-btn" title="Keluar">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </div>
+                </div>
                 <div class="logo-container">
                     <img src="LOGO BPS.png" alt="" style="width: 55px;">
                 </div>
@@ -84,7 +107,7 @@
                             <th>Target Bulan</th>
                             <th>Link Bukti</th>
                             <th>Progress</th>
-                            <th>aksi</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="dashboardTable">
@@ -109,6 +132,9 @@
 
             <div class="modal-body">
                 <form id="inputForm">
+                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="id" value="">
+
                     <div class="form-group">
                         <label><i class="fas fa-clipboard-list input-icon"></i> Rencana Kerja</label>
                         <input type="text" name="rencanaKerja" placeholder="Masukkan rencana kerja..." required>
@@ -158,5 +184,6 @@
         </div>
     </div>
 </body>
-    <script src="script.js"></script>
+<script src="js/dashboard.js"></script>
+
 </html>
